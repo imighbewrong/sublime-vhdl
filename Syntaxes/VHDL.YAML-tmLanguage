@@ -228,17 +228,29 @@ repository:
   constants_numeric:
     patterns:
     - name: constant.numeric.floating_point.vhdl
-      match: \b([+\-]?[\d_]+\.[\d_]+([eE][+\-]?[\d_]+)?)\b
-    - name: constant.numeric.base_pound_number_pound.vhdl
-      match: \b\d+#[\h_]+#\b
+      match: \b([+\-]?[\d_]+\.[\d_]+([eE][+\-]?[\d_]+)?)[^\w]
+    - name: constant.numeric.quoted.base_pound_number_pound.vhdl
+      match: \b\d+(#)[0-9a-hA-F_]+(#)[^\w]
+      captures:
+        '1': {name: constant.numeric.quoted.quote.vhdl}
+        '2': {name: constant.numeric.quoted.quote.vhdl}
     - name: constant.numeric.integer.vhdl
-      match: \b[\d_]+([eE][\d_]+)?\b
+      match: \b[\d_]+([eE][\d_]+)?[^\w]
     - name: constant.numeric.quoted.double.string.hex.vhdl
-      match: '[xX]"[0-9a-fA-F_uUxXzZwWlLhH\-]+"'
+      match: ([xX]\")[0-9a-fA-F_uUxXzZwWlLhH\-]+(\")
+      captures:
+        '1': {name: constant.numeric.quoted.quote.vhdl}
+        '2': {name: constant.numeric.quoted.quote.vhdl}
     - name: constant.numeric.quoted.double.string.octal.vhdl
-      match: '[oO]"[0-7_uUxXzZwWlLhH\-]+"'
+      match: ([oO]\")[0-7_uUxXzZwWlLhH\-]+(\")
+      captures:
+        '1': {name: constant.numeric.quoted.quote.vhdl}
+        '2': {name: constant.numeric.quoted.quote.vhdl}
     - name: constant.numeric.quoted.double.string.binary.vhdl
-      match: '[bB]?"[01_uUxXzZwWlLhH\-]+"'
+      match: ([bB]?\")[01_uUxXzZwWlLhH\-]+(\")
+      captures:
+        '1': {name: constant.numeric.quoted.quote.vhdl}
+        '2': {name: constant.numeric.quoted.quote.vhdl}
     - name: constant.numeric.quoted.double.string.illegal.vhdl
       match: ([bBoOxX]".+?")
       captures:
@@ -281,21 +293,31 @@ repository:
         
         # Entity name reference $12 or illegal identifier $13
         (([a-zA-Z][a-zA-Z0-9_]*)|(.+?))
-        
-        # Check to see if we are being followed by either open paren, end of line, or port or generic words
-        (?=\s*(\(|$|(?i:port|generic)))
-        
+
         # Optional architecture elaboration
-        (
-          # Open paren $16
-          \s*(\()\s*
+        (?:\s*
+          # Open paren $14
+          (\()\s*
         
-          # Arch identifier $18 or invalid identifier $19
-          (([a-zA-Z][a-zA-Z0-9_]*)|(.+?))(?=\s*\))
+          # Arch identifier $15 or invalid identifier $16
+          (?i:([a-zA-Z][a-zA-Z0-9_]*)|(.+?))(?=\s*\))
         
-          # Close paren $21
+          # Close paren $17
           \s*(\))
         )?
+        
+        # End check
+        \s*
+        (?:
+          # a comment $18
+          (--.*$)|
+          # port or generic (lookahead, so that includes can process it)
+          (?=(?i:port|generic).*$)|
+          # invalid $19
+          (.*?$)|
+          # end of line
+          (?:$)
+        )
                   
       beginCaptures:
         '1': {name: entity.name.section.entity_instantiation.vhdl}
@@ -307,10 +329,12 @@ repository:
         '10': {name: punctuation.vhdl}
         '12': {name: entity.name.tag.entity.reference.vhdl}
         '13': {name: invalid.illegal.invalid.identifier.vhdl}
-        '16': {name: punctuation.vhdl}
-        '18': {name: entity.name.tag.architecture.reference.vhdl}
+        '14': {name: punctuation.vhdl}
+        '15': {name: entity.name.tag.architecture.reference.vhdl}
+        '16': {name: invalid.illegal.invalid.identifier.vhdl}
+        '17': {name: punctuation.vhdl}
+        '18': {name: comment.line.double-dash.vhdl}
         '19': {name: invalid.illegal.invalid.identifier.vhdl}
-        '21': {name: punctuation.vhdl}
       end: ;
       endCaptures:
         '0': {name: punctuation.vhdl}

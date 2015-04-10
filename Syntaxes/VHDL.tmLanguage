@@ -592,37 +592,89 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\b([+\-]?[\d_]+\.[\d_]+([eE][+\-]?[\d_]+)?)\b</string>
+					<string>\b([+\-]?[\d_]+\.[\d_]+([eE][+\-]?[\d_]+)?)[^\w]</string>
 					<key>name</key>
 					<string>constant.numeric.floating_point.vhdl</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>\b\d+#[\h_]+#\b</string>
+					<string>\b\d+(#)[0-9a-hA-F_]+(#)[^\w]</string>
 					<key>name</key>
-					<string>constant.numeric.base_pound_number_pound.vhdl</string>
+					<string>constant.numeric.quoted.base_pound_number_pound.vhdl</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b[\d_]+([eE][\d_]+)?\b</string>
+					<string>\b[\d_]+([eE][\d_]+)?[^\w]</string>
 					<key>name</key>
 					<string>constant.numeric.integer.vhdl</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>[xX]"[0-9a-fA-F_uUxXzZwWlLhH\-]+"</string>
+					<string>([xX]\")[0-9a-fA-F_uUxXzZwWlLhH\-]+(\")</string>
 					<key>name</key>
 					<string>constant.numeric.quoted.double.string.hex.vhdl</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>[oO]"[0-7_uUxXzZwWlLhH\-]+"</string>
+					<string>([oO]\")[0-7_uUxXzZwWlLhH\-]+(\")</string>
 					<key>name</key>
 					<string>constant.numeric.quoted.double.string.octal.vhdl</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.quoted.quote.vhdl</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>[bB]?"[01_uUxXzZwWlLhH\-]+"</string>
+					<string>([bB]?\")[01_uUxXzZwWlLhH\-]+(\")</string>
 					<key>name</key>
 					<string>constant.numeric.quoted.double.string.binary.vhdl</string>
 				</dict>
@@ -701,20 +753,30 @@
 # Entity name reference $12 or illegal identifier $13
 (([a-zA-Z][a-zA-Z0-9_]*)|(.+?))
 
-# Check to see if we are being followed by either open paren, end of line, or port or generic words
-(?=\s*(\(|$|(?i:port|generic)))
-
 # Optional architecture elaboration
-(
-  # Open paren $16
-  \s*(\()\s*
+(?:\s*
+  # Open paren $14
+  (\()\s*
 
-  # Arch identifier $18 or invalid identifier $19
-  (([a-zA-Z][a-zA-Z0-9_]*)|(.+?))(?=\s*\))
+  # Arch identifier $15 or invalid identifier $16
+  (?i:([a-zA-Z][a-zA-Z0-9_]*)|(.+?))(?=\s*\))
 
-  # Close paren $21
+  # Close paren $17
   \s*(\))
 )?
+
+# End check
+\s*
+(?:
+  # a comment $18
+  (--.*$)|
+  # port or generic (lookahead, so that includes can process it)
+  (?=(?i:port|generic).*$)|
+  # invalid $19
+  (.*?$)|
+  # end of line
+  (?:$)
+)
           
 </string>
 					<key>beginCaptures</key>
@@ -739,7 +801,22 @@
 							<key>name</key>
 							<string>invalid.illegal.invalid.identifier.vhdl</string>
 						</dict>
+						<key>14</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.vhdl</string>
+						</dict>
+						<key>15</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.tag.architecture.reference.vhdl</string>
+						</dict>
 						<key>16</key>
+						<dict>
+							<key>name</key>
+							<string>invalid.illegal.invalid.identifier.vhdl</string>
+						</dict>
+						<key>17</key>
 						<dict>
 							<key>name</key>
 							<string>punctuation.vhdl</string>
@@ -747,7 +824,7 @@
 						<key>18</key>
 						<dict>
 							<key>name</key>
-							<string>entity.name.tag.architecture.reference.vhdl</string>
+							<string>comment.line.double-dash.vhdl</string>
 						</dict>
 						<key>19</key>
 						<dict>
@@ -755,11 +832,6 @@
 							<string>invalid.illegal.invalid.identifier.vhdl</string>
 						</dict>
 						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>punctuation.vhdl</string>
-						</dict>
-						<key>21</key>
 						<dict>
 							<key>name</key>
 							<string>punctuation.vhdl</string>
