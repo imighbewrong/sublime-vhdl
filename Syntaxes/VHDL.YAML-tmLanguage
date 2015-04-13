@@ -11,6 +11,29 @@ patterns:
 - include: '#cleanup'
 
 repository:
+  association_element:
+    patterns:
+    - name: meta.block.association.vhdl
+      begin: (?=['"a-zA-Z0-9])
+      end: (,)|(?=\))
+      endCaptures:
+        '1': {name: punctuation.vhdl}
+      patterns:
+      - include: "#variable_pattern"
+      - include: "#parenthetical_list"
+      - include: "#cleanup"
+  association_list:
+    patterns:
+    - name: meta.block.association_list.vhdl
+      begin: \(
+      beginCaptures:
+        '0': {name: punctuation.vhdl}
+      end: \)
+      endCaptures:
+        '0': {name: punctuation.vhdl}
+      patterns:
+      - include: "#association_element"
+      - include: "#comments"
   architecture_pattern:
     patterns:
     - name: meta.block.architecture
@@ -178,7 +201,8 @@ repository:
       endCaptures:
         '0': {name: punctuation.vhdl}
       patterns:
-      - include: '#parenthetical_list'
+      - include: '#generic_map_pattern'
+      - include: '#port_map_pattern'
       - include: '#cleanup'
 
   component_pattern:
@@ -228,14 +252,14 @@ repository:
   constants_numeric:
     patterns:
     - name: constant.numeric.floating_point.vhdl
-      match: \b([+\-]?[\d_]+\.[\d_]+([eE][+\-]?[\d_]+)?)[^\w]
+      match: \b([+\-]?[\d_]+\.[\d_]+([eE][+\-]?[\d_]+)?)(?=[^\w])
     - name: constant.numeric.quoted.base_pound_number_pound.vhdl
-      match: \b\d+(#)[0-9a-hA-F_]+(#)[^\w]
+      match: \b\d+(#)[0-9a-hA-F_]+(#)(?=[^\w])
       captures:
         '1': {name: constant.numeric.quoted.quote.vhdl}
         '2': {name: constant.numeric.quoted.quote.vhdl}
     - name: constant.numeric.integer.vhdl
-      match: \b[\d_]+([eE][\d_]+)?[^\w]
+      match: \b[\d_]+([eE][\d_]+)?(?=[^\w])
     - name: constant.numeric.quoted.double.string.hex.vhdl
       match: ([xX]\")[0-9a-fA-F_uUxXzZwWlLhH\-]+(\")
       captures:
@@ -339,7 +363,8 @@ repository:
       endCaptures:
         '0': {name: punctuation.vhdl}
       patterns:
-      - include: '#parenthetical_list'
+      - include: '#generic_map_pattern'
+      - include: '#port_map_pattern'
       - include: '#cleanup'
 
   entity_pattern:
@@ -572,6 +597,18 @@ repository:
         '0': {name: punctuation.vhdl}
       patterns:
       - include: '#parenthetical_list'
+  generic_map_pattern:
+    patterns:
+    - name: meta.block.generic_map.vhdl
+      begin: \b(?i:generic map)\b
+      beginCaptures:
+        '0': {name: keyword.language.vhdl}
+      end: (?<=\))
+      #|(\))
+      endCaptures:
+        '1': {name: invalid.illegal.unexpected.parenthesis.vhdl}
+      patterns:
+      - include: '#association_list'
   if_pattern:
     patterns:
     - name: meta.block.if.vhdl
@@ -744,7 +781,7 @@ repository:
         begin: (?=['"a-zA-Z0-9])
         end: (;|\)|,)
         endCaptures:
-          '0': {name: meta.item.stopping.character.vhdl}
+          '1': {name: punctuation.vhdl}
         patterns:
         - include: '#comments'
         - include: '#parenthetical_pair'
@@ -775,6 +812,18 @@ repository:
         '0': {name: punctuation.vhdl}
       patterns:
       - include: '#parenthetical_list'
+  port_map_pattern:
+    patterns:
+    - name: meta.block.port_map.vhdl
+      begin: \b(?i:port map)\b
+      beginCaptures:
+        '0': {name: keyword.language.vhdl}
+      end: (?<=\))
+      #|(\))
+      endCaptures:
+        '1': {name: invalid.illegal.unexpected.parenthesis.vhdl}
+      patterns:
+      - include: '#association_list'
   procedure_definition_pattern:
     patterns:
     - name: meta.block.procedure_definition.vhdl
@@ -1033,6 +1082,10 @@ repository:
       patterns:
       - include: '#record_pattern'
       - include: '#cleanup'
+  variable_pattern:
+    patterns:
+    - name: variable.vhdl
+      match: ([a-zA-Z][a-zA-Z0-9_]*)
   while_pattern:
     patterns:
     - name: meta.block.while.vhdl
