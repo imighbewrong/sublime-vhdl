@@ -168,47 +168,11 @@
 					<array>
 						<dict>
 							<key>include</key>
-							<string>#function_definition_pattern</string>
+							<string>#concurrent_statement</string>
 						</dict>
 						<dict>
 							<key>include</key>
-							<string>#procedure_definition_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#component_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#if_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#process_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#type_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#record_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#for_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#entity_instantiation_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#component_instantiation_pattern</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#cleanup</string>
+							<string>#block_statement</string>
 						</dict>
 					</array>
 				</dict>
@@ -352,6 +316,101 @@
 				<dict>
 					<key>include</key>
 					<string>#architecture_pattern</string>
+				</dict>
+			</array>
+		</dict>
+		<key>block_statement</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>(?x)
+# From the beginning of the line
+^\s*
+
+(?:
+  # Optional identifier $1
+  ([a-zA-Z][a-zA-Z0-9_]*)
+
+  # Colon $2
+  \s*(:)\s*
+)?
+
+# The word block $3
+(?i:block\b)
+          
+</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.section.block.begin.vhdl</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.vhdl</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.language.vhdl</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?x)
+# The word end $1
+(end)
+
+# the word block $2
+\s+(block)
+
+# Optional identifier $3 or invalid identifier $4
+(?:\s+(?:(\1)|(.+?)))?
+
+# Semicolon that ends it all
+\s*(;)
+          
+</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.language.vhdl</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.language.vhdl</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.section.block.end.vhdl</string>
+						</dict>
+						<key>4</key>
+						<dict>
+							<key>name</key>
+							<string>invalid.illegal.invalid.identifier.vhdl</string>
+						</dict>
+						<key>5</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.vhdl</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>meta.block.block_statement.vhdl</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#concurrent_statement</string>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
@@ -665,6 +724,56 @@
 							<string>#comments</string>
 						</dict>
 					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>concurrent_statement</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#function_definition_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#procedure_definition_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#component_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#if_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#process_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#type_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#record_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#for_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#entity_instantiation_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#component_instantiation_pattern</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#cleanup</string>
 				</dict>
 			</array>
 		</dict>
