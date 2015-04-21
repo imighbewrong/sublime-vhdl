@@ -527,14 +527,17 @@ repository:
     patterns:
     - name: meta.block.function_definition.vhdl
       begin: |
-        (?x)
+        (?xi)
         # From the beginning of the line
         ^\s*
+
+        # The optional word impure $1
+        (?:(impure)\s+)?
         
-        # The word function $1
-        ((?i:function))\s+
+        # The word function $2
+        (function)\s+
         
-        (
+        (?:
           # A valid normal identifier $3
            ([a-zA-Z][a-zA-Z\d_]*)
           # A valid string quoted identifier $4
@@ -548,13 +551,14 @@ repository:
         # Check to make sure we have a list or we return
         (?=\s*
           (
-             \(
+            \(
             |(?i:\breturn\b)
           )
         )
                   
       beginCaptures:
         '1': {name: keyword.language.vhdl}
+        '2': {name: keyword.language.vhdl}
         '3': {name: entity.name.function.function.begin.vhdl}
         '4': {name: entity.name.function.function.begin.vhdl}
         '5': {name: entity.name.function.function.begin.vhdl}
@@ -565,22 +569,23 @@ repository:
         ^\s*
         
         # The word end $1
-        ((?i:end))
+        (end)
         
-        # Optional word function $3
-        (\s+((?i:function)))?
+        # Optional word function $2
+        \s+(function)?
         
-        # Optional matched identifier $6 or mismatched identifier $7
-        (\s+((\3|\4|\5)|(.+?)))?
+        # Optional matched identifier $3 or mismatched identifier $4
+        (?:\s+(?i:(\3|\4|\5)|(.+?)))?
         
         # Ending with whitespace and semicolon
-        (?=\s*;)
+        \s*(;)
                   
       endCaptures:
         '1': {name: keyword.language.vhdl}
-        '3': {name: keyword.language.vhdl}
-        '6': {name: entity.name.function.function.end.vhdl}
-        '7': {name: invalid.illegal.mismatched.identifier.vhdl}
+        '2': {name: keyword.language.vhdl}
+        '3': {name: entity.name.function.function.end.vhdl}
+        '4': {name: invalid.illegal.mismatched.identifier.vhdl}
+        '5': {name: punctuation.terminator.function_definition.vhdl}
       patterns:
       - include: '#control_patterns'
       - include: '#parenthetical_list'
@@ -883,7 +888,7 @@ repository:
         # From the beginning of the line
         ^\s*
         
-        # The word function $1
+        # The word procedure $1
         ((?i:procedure))\s+
         
         (

@@ -1307,14 +1307,17 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>(?x)
+					<string>(?xi)
 # From the beginning of the line
 ^\s*
 
-# The word function $1
-((?i:function))\s+
+# The optional word impure $1
+(?:(impure)\s+)?
 
-(
+# The word function $2
+(function)\s+
+
+(?:
   # A valid normal identifier $3
    ([a-zA-Z][a-zA-Z\d_]*)
   # A valid string quoted identifier $4
@@ -1328,7 +1331,7 @@
 # Check to make sure we have a list or we return
 (?=\s*
   (
-     \(
+    \(
     |(?i:\breturn\b)
   )
 )
@@ -1337,6 +1340,11 @@
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.language.vhdl</string>
+						</dict>
+						<key>2</key>
 						<dict>
 							<key>name</key>
 							<string>keyword.language.vhdl</string>
@@ -1368,16 +1376,16 @@
 ^\s*
 
 # The word end $1
-((?i:end))
+(end)
 
-# Optional word function $3
-(\s+((?i:function)))?
+# Optional word function $2
+\s+(function)?
 
-# Optional matched identifier $6 or mismatched identifier $7
-(\s+((\3|\4|\5)|(.+?)))?
+# Optional matched identifier $3 or mismatched identifier $4
+(?:\s+(?i:(\3|\4|\5)|(.+?)))?
 
 # Ending with whitespace and semicolon
-(?=\s*;)
+\s*(;)
           
 </string>
 					<key>endCaptures</key>
@@ -1387,20 +1395,25 @@
 							<key>name</key>
 							<string>keyword.language.vhdl</string>
 						</dict>
-						<key>3</key>
+						<key>2</key>
 						<dict>
 							<key>name</key>
 							<string>keyword.language.vhdl</string>
 						</dict>
-						<key>6</key>
+						<key>3</key>
 						<dict>
 							<key>name</key>
 							<string>entity.name.function.function.end.vhdl</string>
 						</dict>
-						<key>7</key>
+						<key>4</key>
 						<dict>
 							<key>name</key>
 							<string>invalid.illegal.mismatched.identifier.vhdl</string>
+						</dict>
+						<key>5</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.terminator.function_definition.vhdl</string>
 						</dict>
 					</dict>
 					<key>name</key>
@@ -2191,7 +2204,7 @@
 # From the beginning of the line
 ^\s*
 
-# The word function $1
+# The word procedure $1
 ((?i:procedure))\s+
 
 (
