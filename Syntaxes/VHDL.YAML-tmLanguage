@@ -19,6 +19,7 @@ repository:
       endCaptures:
         '1': {name: punctuation.vhdl}
       patterns:
+      - include: "#keywords"
       - include: "#variable_pattern"
       - include: "#parenthetical_list"
       - include: "#cleanup"

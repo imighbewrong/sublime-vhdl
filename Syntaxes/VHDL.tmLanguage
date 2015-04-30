@@ -201,6 +201,10 @@
 					<array>
 						<dict>
 							<key>include</key>
+							<string>#keywords</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#variable_pattern</string>
 						</dict>
 						<dict>
